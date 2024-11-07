@@ -1,0 +1,504 @@
+/* The code down below is from Wakana Y.K. (https://codepen.io/wakana-k/pen/eYovJJe) */
+
+:root {
+  --ratioW: 1;
+}
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  overscroll-behavior-x: none;
+  overscroll-behavior-y: none;
+  scroll-behavior: smooth;
+  min-height: 100%;
+}
+body {
+  position: relative;
+  width: 100vw;
+  min-height: 100vh;
+  overflow-x: hidden;
+  background: linear-gradient(
+    to bottom,
+    oklch(60% 0.2 230),
+    oklch(60% 0.2 180)
+  );
+}
+main {
+  position: relative;
+}
+
+figure {
+  margin: 3rem 0;
+  font-size: 0.7em;
+  color: currentColor;
+}
+
+figure img {
+  display: block;
+  width: clamp(100px, 50vw, 300px);
+  border-radius: 10px;
+  filter: drop-shadow(3px 4px 2px rgba(0, 0, 0, 0.2));
+  background-color: lightgray;
+}
+
+figure a {
+  text-decoration: none;
+  color: currentColor;
+}
+
+#bg {
+  display: block;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+
+  background-image: linear-gradient(
+    to bottom,
+    white,
+    gray 25%,
+    gray 60%,
+    khaki
+  );
+  opacity: 0.5;
+  mix-blend-mode: overlay;
+}
+#surface {
+  mix-blend-mode: overlay;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+}
+#surface::before,
+#surface::after {
+  content: "";
+  display: block;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-image: url(https://raw.githubusercontent.com/happy358/misc/main/image/cloud_X.png);
+  background-repeat: repeat-x;
+
+  --duration: 6s;
+  --lowHeight: 20vh;
+  --highHeight: 40vh;
+  --layerNum: 2;
+  --index: 0;
+  --opacity: 0.4;
+
+  animation: surface var(--duration) linear infinite;
+  animation-delay: calc(
+    (var(--duration) / var(--layerNum)) * var(--index) * -1
+  );
+  opacity: 0;
+}
+#surface::before {
+  --index: 0;
+  transform: scale3d(1, -1, 1);
+}
+#surface::after {
+  --index: 1;
+  transform: scale3d(-1, -1, 1);
+}
+#caustics {
+  position: fixed;
+  bottom: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  transform-origin: bottom center;
+  transform: scale3d(2, 1, 1);
+}
+#caustics::before,
+#caustics::after {
+  content: "";
+  display: block;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-image: url(https://raw.githubusercontent.com/happy358/misc/main/image/caustics.png);
+  background-repeat: repeat;
+
+  --duration: 10s;
+  --height: 30vh;
+  --gapY: 0px;
+
+  background-size: calc(100vw / (var(--ratioW))) 40vh;
+  animation: caustics calc(var(--duration) * (var(--ratioW))) linear infinite;
+  opacity: 0.3;
+  mask-image: linear-gradient(
+    to top,
+    white,
+    transparent var(--height),
+    transparent
+  );
+}
+#caustics::after {
+  --duration: 11s;
+  --gapY: 10vh;
+  animation-delay: -2s;
+  transform: scale3d(-1, 1, 1);
+}
+
+#sun {
+  mix-blend-mode: overlay;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+}
+#sun div {
+  content: "";
+  display: block;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  transform-origin: 50vw 0;
+  animation: sun 7s ease infinite alternate;
+
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 15%,
+    white 50%,
+    white 55%,
+    transparent 80%
+  );
+}
+#sun #sun_layer1 {
+  background: linear-gradient(
+    to right,
+    transparent 39%,
+    white 40%,
+    transparent 41%,
+    transparent 48.5%,
+    white 50%,
+    transparent 51.5%,
+    transparent 53%,
+    white 54%,
+    transparent 55%,
+    transparent 70%,
+    white 71%,
+    transparent 72%
+  );
+}
+#sun #sun_layer2 {
+  animation-delay: -2s;
+  animation-duration: 7.8s;
+  animation-direction: alternate-reverse;
+  background: linear-gradient(
+    to right,
+    transparent 32%,
+    white 33%,
+    transparent 34%,
+    transparent 38%,
+    white 39%,
+    transparent 40%,
+    transparent 53%,
+    white 54%,
+    transparent 55%,
+    transparent 63.5%,
+    white 65%,
+    transparent 66.5%
+  );
+}
+#sun #sun_layer3 {
+  animation-delay: -5s;
+  animation-duration: 8.5s;
+  background: linear-gradient(
+    to right,
+    transparent 38.5%,
+    white 40%,
+    transparent 41.5%,
+    transparent 47%,
+    white 48%,
+    transparent 49%,
+    transparent 52%,
+    white 53%,
+    transparent 54%,
+    transparent 60%,
+    white 61%,
+    transparent 62%
+  );
+}
+
+.arrows {
+  width: auto;
+  height: auto;
+  position: absolute;
+  bottom: 0.5rem;
+  text-align: center;
+  mix-blend-mode: overlay;
+}
+.arrows div {
+  --arrowSize: 1.3rem;
+  --arrowColor: currentColor;
+
+  width: var(--arrowSize);
+  height: var(--arrowSize);
+  margin: calc(var(--arrowSize) * -1.5) 0;
+  background: transparent;
+  border: calc(var(--arrowSize) * 0.11) solid;
+  border-color: transparent transparent var(--arrowColor) var(--arrowColor);
+  transform: rotate(-45deg);
+  animation: arrow 2s infinite linear;
+}
+@keyframes arrow {
+  0% {
+    opacity: 0;
+  }
+  40% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+.arrows div:nth-of-type(3) {
+  animation-delay: -0.8s;
+}
+.arrows div:nth-of-type(2) {
+  animation-delay: -0.4s;
+}
+.arrows div:nth-of-type(1) {
+  animation-delay: 0s;
+}
+
+@keyframes surface {
+  0% {
+    opacity: 0;
+    background-position: center bottom;
+    background-size: calc(3 * var(--highHeight)) var(--highHeight);
+  }
+  20% {
+    opacity: var(--opacity);
+  }
+  100% {
+    opacity: 0;
+    background-position: center bottom calc(-1 * var(--lowHeight));
+    background-size: calc(1 * var(--lowHeight)) var(--lowHeight);
+  }
+}
+@keyframes caustics {
+  0% {
+    background-position: bottom var(--gapY) left;
+  }
+  100% {
+    background-position: bottom var(--gapY) left -100vw;
+  }
+}
+@keyframes sun {
+  0% {
+    opacity: 0.1;
+    transform: skew(5deg) scale3d(3, 1.5, 1);
+  }
+  50% {
+    opacity: 0.08;
+    transform: skew(0deg) scale3d(1.5, 1, 1);
+  }
+  100% {
+    opacity: 0.1;
+    transform: skew(-5deg) scale3d(3, 1, 1);
+  }
+}
+@media (orientation: portrait) {
+  :root {
+    --ratioW: 1;
+  }
+}
+@media (min-aspect-ratio: 1/1) {
+  :root {
+    --ratioW: 2;
+  }
+}
+@media (min-aspect-ratio: 2/1) {
+  :root {
+    --ratioW: 3;
+  }
+}
+@media (min-aspect-ratio: 3/1) {
+  :root {
+    --ratioW: 4;
+  }
+}
+@media (min-aspect-ratio: 4/1) {
+  :root {
+    --ratioW: 5;
+  }
+}
+@media (min-aspect-ratio: 5/1) {
+  :root {
+    --ratioW: 6;
+  }
+}
+
+/* The code above is from Wakana Y.K. (https://codepen.io/wakana-k/pen/eYovJJe) */
+/**********************************************************************************************************************************************************************/
+
+
+body {
+  /* background-image: url(https://images.pexels.com/photos/457881/pexels-photo-457881.jpeg?);
+  background-repeat: no-repeat;
+  background-attachment: fixed; 
+  background-size: 100% 100%; */
+  font-family: monospace;
+  color: rgb(34, 150, 204);
+}
+
+h2, a {
+  text-decoration: none;
+  margin-top: 3px;
+  margin-bottom: 14px;
+}
+
+a {
+  color: rgb(40, 104, 223);
+  text-shadow: 1px 1px #3d3ad36b;
+}
+
+a:hover {
+  color: rgb(0, 153, 255);
+  text-decoration: underline;
+}
+
+hr {
+  border: 10px solid rgba(135, 235, 205, 0.664);
+  border-radius: 5px;
+  margin: 30px 0;
+}
+
+div {
+  border-radius: 10px;
+}
+
+.top-section, .bottom-section {
+  color: white;
+  text-align: center;
+}
+
+.top-section p, .bottom-section p {
+  font-size: 1rem;
+}
+
+.process-section {  
+  display: grid;
+  grid-template-columns: 40% 60%;
+  grid-template-rows: repeat(1fr, 2);
+  gap: 10px 5px;
+  grid-auto-flow: row;
+  grid-template-areas:
+      "image-container paragraph-container1"
+      "image-container paragraph-container2"
+      "image-container paragraph-container3";
+  padding: 20px;
+  background: rgba(217, 255, 243, 0.4);
+  margin: 20px;
+  border-left: 12px double rgb(187, 234, 240);
+  border-right: 12px double rgb(187, 234, 240);
+}
+
+.image-container, 
+.paragraph-container1, 
+.paragraph-container2, 
+.paragraph-container3 {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.paragraph-title {
+  background: rgba(102, 158, 231, 0.4);
+  width: 100%;
+  font-size: 0.6rem;
+  height: 20px;
+  margin-top: -6px;
+}
+
+.image-container { 
+  grid-area: image-container;
+  height: 200px;
+  text-align: center;
+}
+
+.image-container img {
+  margin: auto;
+  border: 2px dashed rgb(21, 222, 236);
+  width: 25%;
+  height: 70%;
+  background-color: white;
+  padding: 10px;
+  border-radius: 40px;
+}
+
+.paragraph-container1 { 
+  grid-area: paragraph-container1;
+}
+
+.paragraph-container2 {
+  grid-area: paragraph-container2; 
+}
+
+.paragraph-container3 { 
+  grid-area: paragraph-container3; 
+}
+
+.paragraph-container1 p, 
+.paragraph-container2 p, 
+.paragraph-container3 p {
+  margin-left: 12px;
+  font-size: 1.1rem;
+}
+
+.question-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+  gap: 20px 20px;
+  grid-auto-flow: row;
+  grid-template-areas:
+    "first second"
+    "third fourth"
+    "fifth sixth"
+    "seventh eighth";
+  margin: 40px auto;
+  width: 90%;
+  color: rgb(13, 122, 117);
+}
+
+.first { grid-area: first; }
+.second { grid-area: second; }
+.third { grid-area: third; }
+.fourth { grid-area: fourth; }
+.fifth { grid-area: fifth; }
+.sixth { grid-area: sixth; }
+.seventh { grid-area: seventh; }
+.eighth { grid-area: eighth; }
+
+.first, .second,
+.third, .fourth,
+.fifth, .sixth,
+.seventh, .eighth {
+  background: rgba(217, 255, 243, 0.4);
+  padding: 20px;
+  border-left: 10px solid rgb(39, 247, 160);
+}
+
